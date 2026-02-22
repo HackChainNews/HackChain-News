@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HackChainNews — Cybersecurity & Blockchain Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b10;
+    --surface: #0d1117;
+    --surface2: #111820;
+    --border: #1e2a38;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #00ff88;
+    --text: #e2eaf4;
+    --muted: #6b7f96;
+    --red: #ff3b3b;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: var(--accent);
+    color: #000;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    z-index: 10;
+    padding: 6px 0;
+  }
+  .ticker-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background: #000;
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    padding: 0 16px;
+    z-index: 2;
+    text-transform: uppercase;
+  }
+  .ticker-content {
+    display: inline-block;
+    animation: ticker 40s linear infinite;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding-left: 160px;
+  }
+  .ticker-content span { margin: 0 40px; }
+  .ticker-content .dot { color: #000; opacity: .5; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    z-index: 9;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8, 11, 16, .95);
+    backdrop-filter: blur(8px);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    letter-spacing: 2px;
+    line-height: 1;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .logo span.hack { color: var(--accent); }
+  .logo span.chain { color: var(--accent2); }
+  .logo-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .header-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .header-date {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent3);
+    letter-spacing: 1px;
+  }
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent3);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .5; transform: scale(.8); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 0 40px;
+    overflow-x: auto;
+  }
+  nav a {
+    display: block;
+    padding: 14px 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color .2s, border-color .2s;
+  }
+  nav a:hover, nav a.active { color: var(--text); border-bottom-color: var(--accent); }
+  nav a.active { color: var(--accent); }
+  .nav-search {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .nav-search input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    width: 160px;
+  }
+  .nav-search input::placeholder { color: var(--muted); }
+
+  /* ── BREAKING BANNER ── */
+  .breaking {
+    background: linear-gradient(90deg, var(--red), #c00);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: relative;
+    z-index: 8;
+    animation: slideIn .5s ease;
+  }
+  @keyframes slideIn { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .breaking-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    background: #fff;
+    color: var(--red);
+    padding: 2px 10px;
+    flex-shrink: 0;
+  }
+  .breaking-text {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 40px; position: relative; z-index: 1; }
+
+  /* ── HERO GRID ── */
+  .hero-section { padding: 32px 0 0; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: auto auto;
+    gap: 2px;
+    background: var(--border);
+  }
+  .hero-main {
+    grid-row: 1 / 3;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--surface);
+  }
+  .hero-main:hover .hero-img-bg { transform: scale(1.03); }
+  .hero-img-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0a1628 0%, #051020 60%, #0d0820 100%);
+    transition: transform .6s ease;
+  }
+  .hero-circuit {
+    position: absolute;
+    inset: 0;
+    opacity: .07;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cpath d='M10 50 H40 V20 H80 M40 50 V80 H70' stroke='%2300d4ff' stroke-width='1' fill='none'/%3E%3Ccircle cx='10' cy='50' r='3' fill='%2300d4ff'/%3E%3Ccircle cx='40' cy='20' r='3' fill='%2300d4ff'/%3E%3Ccircle cx='80' cy='20' r='3' fill='%2300d4ff'/%3E%3Ccircle cx='70' cy='80' r='3' fill='%2300d4ff'/%3E%3C/svg%3E");
+    background-size: 100px 100px;
+  }
+  .hero-main-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 480px;
+    background: linear-gradient(to top, rgba(8,11,16,.98) 0%, rgba(8,11,16,.4) 60%, transparent 100%);
+  }
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .tag-cyber { color: var(--accent); border: 1px solid var(--accent); padding: 3px 10px; }
+  .tag-blockchain { color: var(--accent2); border: 1px solid var(--accent2); padding: 3px 10px; }
+  .tag-zero { color: var(--accent3); border: 1px solid var(--accent3); padding: 3px 10px; }
+  .tag-malware { color: var(--red); border: 1px solid var(--red); padding: 3px 10px; }
+  .tag-defi { color: #a78bfa; border: 1px solid #a78bfa; padding: 3px 10px; }
+  .tag-exploit { color: #f59e0b; border: 1px solid #f59e0b; padding: 3px 10px; }
+  .tag-privacy { color: #34d399; border: 1px solid #34d399; padding: 3px 10px; }
+
+  .hero-main h1 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--text);
+    margin-bottom: 12px;
+    max-width: 580px;
+  }
+  .hero-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  .hero-meta .author { color: var(--accent); }
+
+  /* Side stories */
+  .hero-side { background: var(--surface); padding: 24px; cursor: pointer; transition: background .2s; }
+  .hero-side:hover { background: var(--surface2); }
+  .hero-side + .hero-side { border-top: 1px solid var(--border); }
+  .hero-side .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+  .hero-side h2 { font-size: 17px; font-weight: 700; line-height: 1.35; color: var(--text); margin-bottom: 8px; }
+  .hero-side h2:hover { color: var(--accent); }
+  .hero-side p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .story-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 10px; letter-spacing: 1px; }
+  .story-meta .sep { margin: 0 8px; opacity: .4; }
+
+  /* ── SECTION LABEL ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 32px 0 16px;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .section-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: var(--text);
+  }
+  .section-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
+  .section-more {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .section-more:hover { text-decoration: underline; }
+
+  /* ── ARTICLE GRID ── */
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--border);
+    margin-bottom: 2px;
+  }
+  .article-card {
+    background: var(--surface);
+    padding: 24px;
+    cursor: pointer;
+    transition: background .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .article-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background .3s;
+  }
+  .article-card:hover { background: var(--surface2); }
+  .article-card:hover::before { background: var(--accent); }
+  .article-card .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; display: block; }
+  .article-card h3 { font-size: 16px; font-weight: 700; line-height: 1.4; color: var(--text); margin-bottom: 10px; }
+  .article-card h3:hover { color: var(--accent); }
+  .article-card p { font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 16px; }
+  .article-footer { display: flex; align-items: center; justify-content: space-between; }
+  .article-author { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+  .article-author span { color: var(--text); }
+  .read-time { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); background: var(--border); padding: 2px 8px; border-radius: 2px; }
+
+  /* ── TWO COL ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+    padding: 32px 0;
+  }
+
+  /* ── LIST STORIES ── */
+  .list-stories { display: flex; flex-direction: column; gap: 0; }
+  .list-story {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    align-items: start;
+  }
+  .list-story:last-child { border-bottom: none; }
+  .story-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--border);
+    line-height: 1;
+    transition: color .2s;
+  }
+  .list-story:hover .story-number { color: var(--accent); }
+  .list-story-body .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; display: block; }
+  .list-story-body h3 { font-size: 16px; font-weight: 700; line-height: 1.4; margin-bottom: 6px; }
+  .list-story-body h3:hover { color: var(--accent); }
+  .list-story-body .story-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+
+  /* ── SIDEBAR ── */
+  .sidebar { display: flex; flex-direction: column; gap: 24px; }
+
+  .sidebar-widget {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .widget-title {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .widget-title-accent { color: var(--accent); }
+
+  /* Threat meter */
+  .threat-meter { padding: 20px; }
+  .threat-level {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .threat-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); }
+  .threat-value { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--accent2); }
+  .threat-bar-wrap { background: var(--border); height: 6px; border-radius: 3px; margin-bottom: 8px; }
+  .threat-bar { height: 100%; border-radius: 3px; background: linear-gradient(to right, var(--accent3), var(--accent2), var(--red)); }
+  .threat-desc { font-size: 12px; color: var(--muted); margin-top: 12px; }
+
+  /* Crypto prices */
+  .crypto-list { padding: 8px 0; }
+  .crypto-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    transition: background .2s;
+    cursor: pointer;
+  }
+  .crypto-item:last-child { border-bottom: none; }
+  .crypto-item:hover { background: var(--surface2); }
+  .crypto-name { display: flex; align-items: center; gap: 10px; }
+  .crypto-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .btc-icon { background: rgba(247,147,26,.15); color: #f7931a; }
+  .eth-icon { background: rgba(98,126,234,.15); color: #627eea; }
+  .sol-icon { background: rgba(153,69,255,.15); color: #9945ff; }
+  .xrp-icon { background: rgba(0,204,189,.15); color: #00ccbd; }
+  .crypto-ticker { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); }
+  .crypto-full { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
+  .crypto-price-wrap { text-align: right; }
+  .crypto-price { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 600; color: var(--text); }
+  .crypto-change { font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+  .up { color: var(--accent3); }
+  .down { color: var(--red); }
+
+  /* Trending */
+  .trending-list { padding: 4px 0; }
+  .trending-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .trending-item:last-child { border-bottom: none; }
+  .trending-item:hover { background: var(--surface2); }
+  .trending-num { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--border); flex-shrink: 0; transition: color .2s; }
+  .trending-item:hover .trending-num { color: var(--accent); }
+  .trending-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; }
+  .trending-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+  /* ── CVE SECTION ── */
+  .cve-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--border);
+  }
+  .cve-card {
+    background: var(--surface);
+    padding: 20px;
+    cursor: pointer;
+    transition: background .2s;
+    position: relative;
+  }
+  .cve-card:hover { background: var(--surface2); }
+  .severity-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    margin-bottom: 10px;
+  }
+  .critical { background: rgba(255,59,59,.15); color: var(--red); }
+  .high { background: rgba(255,107,53,.15); color: var(--accent2); }
+  .medium { background: rgba(255,193,7,.15); color: #ffc107; }
+  .low { background: rgba(0,255,136,.15); color: var(--accent3); }
+  .cve-id { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--accent); margin-bottom: 8px; font-weight: 600; }
+  .cve-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; line-height: 1.3; }
+  .cve-score { font-family: 'Bebas Neue', sans-serif; font-size: 28px; margin-top: 12px; }
+  .cve-score.critical { color: var(--red); background: none; }
+  .cve-score.high { color: var(--accent2); background: none; }
+  .cve-score.medium { color: #ffc107; background: none; }
+  .cve-affected { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+  /* ── OPINION ── */
+  .opinion-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: var(--border);
+  }
+  .opinion-card {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    padding: 28px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: border-color .2s, background .2s;
+  }
+  .opinion-card:hover { border-left-color: var(--accent); }
+  .opinion-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .opinion-quote {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .opinion-author { display: flex; align-items: center; gap: 12px; }
+  .author-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--border);
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+  .author-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .author-role { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+
+  /* ── NEWSLETTER ── */
+  .newsletter {
+    background: linear-gradient(135deg, #0a1628 0%, #080b10 100%);
+    border: 1px solid var(--accent);
+    padding: 48px;
+    text-align: center;
+    margin: 48px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .newsletter::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(ellipse at center, rgba(0,212,255,.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .newsletter h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 4px;
+    color: var(--text);
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .newsletter h2 em { color: var(--accent); font-style: normal; }
+  .newsletter p { color: var(--muted); font-size: 15px; margin-bottom: 28px; position: relative; }
+  .newsletter-form { display: flex; gap: 0; max-width: 480px; margin: 0 auto; position: relative; }
+  .newsletter-form input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-right: none;
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 14px 20px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .newsletter-form input:focus { border-color: var(--accent); }
+  .newsletter-form input::placeholder { color: var(--muted); }
+  .newsletter-form button {
+    background: var(--accent);
+    border: 1px solid var(--accent);
+    color: #000;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 24px;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .newsletter-form button:hover { background: #00b8d9; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 48px 0 24px;
+    margin-top: 48px;
+    position: relative;
+    z-index: 1;
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  .footer-brand .logo { font-size: 28px; display: block; margin-bottom: 12px; }
+  .footer-brand p { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 16px; }
+  .social-links { display: flex; gap: 10px; }
+  .social-link {
+    width: 36px; height: 36px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: background .2s, color .2s;
+    text-decoration: none;
+  }
+  .social-link:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+  .footer-col h4 { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: var(--text); margin-bottom: 16px; }
+  .footer-col a { display: block; font-size: 13px; color: var(--muted); text-decoration: none; padding: 4px 0; transition: color .2s; }
+  .footer-col a:hover { color: var(--accent); }
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .footer-bottom a { color: var(--muted); text-decoration: none; }
+  .footer-bottom a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp .6s ease forwards;
+  }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  .delay-1 { animation-delay: .1s; }
+  .delay-2 { animation-delay: .2s; }
+  .delay-3 { animation-delay: .3s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .container { padding: 0 20px; }
+    .header-top { padding: 16px 20px; }
+    nav { padding: 0 20px; }
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-main { grid-row: auto; }
+    .article-grid { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .cve-grid { grid-template-columns: 1fr 1fr; }
+    .opinion-strip { grid-template-columns: 1fr; }
+    .newsletter { padding: 32px 24px; }
+  }
+  @media (max-width: 600px) {
+    .article-grid { grid-template-columns: 1fr; }
+    .cve-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .logo { font-size: 28px; }
+    nav a { padding: 12px 14px; font-size: 11px; }
+    .hero-main h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">LIVE FEED</div>
+  <div class="ticker-content">
+    <span>🔴 CRITICAL: New zero-day in OpenSSL affects millions of servers globally</span>
+    <span class="dot">◆</span>
+    <span>Bitcoin surges past $98,400 amid ETF inflow surge</span>
+    <span class="dot">◆</span>
+    <span>Lazarus Group linked to $240M DeFi protocol exploit</span>
+    <span class="dot">◆</span>
+    <span>CISA issues emergency directive for Ivanti Connect Secure vulnerability</span>
+    <span class="dot">◆</span>
+    <span>Ethereum L2 TVL reaches $65B all-time high</span>
+    <span class="dot">◆</span>
+    <span>Russian APT29 targets EU diplomatic communications — report</span>
+    <span class="dot">◆</span>
+    <span>🔴 CRITICAL: New zero-day in OpenSSL affects millions of servers globally</span>
+    <span class="dot">◆</span>
+    <span>Bitcoin surges past $98,400 amid ETF inflow surge</span>
+    <span class="dot">◆</span>
+    <span>Lazarus Group linked to $240M DeFi protocol exploit</span>
+    <span class="dot">◆</span>
+    <span>CISA issues emergency directive for Ivanti Connect Secure vulnerability</span>
+    <span class="dot">◆</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <div>
+      <a class="logo" href="#"><span class="hack">HACK</span><span class="chain">CHAIN</span>NEWS</a>
+      <div class="logo-sub">Cybersecurity &amp; Blockchain Intelligence</div>
+    </div>
+    <div class="header-meta">
+      <div class="header-date" id="live-date">Sunday, 22 February 2026</div>
+      <div class="live-badge"><div class="live-dot"></div>LIVE COVERAGE</div>
+    </div>
+  </div>
+  <nav>
+    <a href="#" class="active">Home</a>
+    <a href="#">Cyber Threats</a>
+    <a href="#">Blockchain</a>
+    <a href="#">DeFi</a>
+    <a href="#">Zero-Days</a>
+    <a href="#">Privacy</a>
+    <a href="#">Regulation</a>
+    <a href="#">Research</a>
+    <a href="#">Opinion</a>
+    <div class="nav-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7f96" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" placeholder="Search news, CVEs, exploits...">
+    </div>
+  </nav>
+</header>
+
+<!-- BREAKING -->
+<div class="breaking">
+  <div class="breaking-label">BREAKING</div>
+  <div class="breaking-text">FBI confirms North Korean hackers stole $1.5B from crypto exchange in largest ever digital heist — investigation ongoing</div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- HERO -->
+  <div class="container">
+    <div class="hero-section fade-in">
+      <div class="hero-grid">
+
+        <!-- MAIN STORY -->
+        <div class="hero-main">
+          <div class="hero-img-bg"></div>
+          <div class="hero-circuit"></div>
+          <div class="hero-main-content">
+            <div class="hero-tag tag-cyber">⚡ EXCLUSIVE</div>
+            <h1>Massive Backdoor Discovered in Widely-Used Linux Compression Library — 500M Devices at Risk</h1>
+            <p style="color: var(--muted); font-size: 14px; margin-bottom: 16px; max-width: 560px;">Security researchers have uncovered a sophisticated supply-chain attack embedded in XZ Utils, a compression tool present in virtually every major Linux distribution. The backdoor enables unauthorized SSH root access.</p>
+            <div class="hero-meta">By <span class="author">Sarah Chen</span> &nbsp;·&nbsp; 47 min ago &nbsp;·&nbsp; 12 min read</div>
+          </div>
+        </div>
+
+        <!-- SIDE STORIES -->
+        <div>
+          <div class="hero-side">
+            <div class="tag tag-blockchain">Blockchain</div>
+            <h2>Ethereum's New EIP-7702 Could Eliminate Seed Phrases Forever</h2>
+            <p>The proposed account abstraction upgrade would let users recover wallets via biometrics or social recovery, marking the biggest UX shift in crypto history.</p>
+            <div class="story-meta">Marcus Reeve <span class="sep">|</span> 1h ago <span class="sep">|</span> 8 min read</div>
+          </div>
+          <div class="hero-side">
+            <div class="tag tag-zero">Zero-Day</div>
+            <h2>Unpatched Remote Code Execution in Cisco IOS XE Actively Exploited in the Wild</h2>
+            <p>CISA adds critical vulnerability to KEV catalog as honeypots detect mass scanning activity targeting enterprise routers across North America and Europe.</p>
+            <div class="story-meta">Dmitri Volkov <span class="sep">|</span> 2h ago <span class="sep">|</span> 6 min read</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- LATEST NEWS GRID -->
+  <div class="container">
+    <div class="section-header fade-in delay-1">
+      <h2>Latest Intelligence</h2>
+      <div class="section-line"></div>
+      <a href="#" class="section-more">View All →</a>
+    </div>
+
+    <div class="article-grid fade-in delay-2">
+
+      <div class="article-card">
+        <span class="tag tag-malware">Malware</span>
+        <h3>New Infostealer Campaign Targets Crypto Wallets via Fake Ledger Live App</h3>
+        <p>Threat actors distribute trojanized version of Ledger Live through SEO poisoning, silently exfiltrating seed phrases from over 60,000 victims.</p>
+        <div class="article-footer">
+          <div class="article-author">By <span>&nbsp;Alex Novak</span></div>
+          <div class="read-time">5 min</div>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <span class="tag tag-defi">DeFi</span>
+        <h3>$340M Flash Loan Attack Drains Aave Fork — Smart Contract Auditor Missed Reentrancy</h3>
+        <p>A sophisticated attacker exploited a subtle reentrancy vulnerability overlooked in three separate audits, triggering the largest DeFi exploit of the year.</p>
+        <div class="article-footer">
+          <div class="article-author">By <span>&nbsp;Lena Brandt</span></div>
+          <div class="read-time">7 min</div>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <span class="tag tag-cyber">Threat Intel</span>
+        <h3>APT41 Deploys Novel Rootkit Against Financial Institutions in Southeast Asia</h3>
+        <p>Chinese state-sponsored group uses kernel-level persistence mechanism that survives reboots and evades leading EDR solutions, targeting SWIFT infrastructure.</p>
+        <div class="article-footer">
+          <div class="article-author">By <span>&nbsp;James Osei</span></div>
+          <div class="read-time">9 min</div>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <span class="tag tag-privacy">Privacy</span>
+        <h3>Telegram Quietly Hands Over Data of 12,000 Users to Law Enforcement After Policy Shift</h3>
+        <p>Documents obtained via FOIA reveal a dramatic uptick in government requests fulfilled since September's terms of service update that removed end-to-end encryption defaults.</p>
+        <div class="article-footer">
+          <div class="article-author">By <span>&nbsp;Priya Mehta</span></div>
+          <div class="read-time">6 min</div>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <span class="tag tag-exploit">Exploit</span>
+        <h3>Proof-of-Concept Released for Windows CLFS Elevation-of-Privilege Vulnerability</h3>
+        <p>A researcher publishes working PoC code for CVE-2025-8821 just 48 hours after patch release, giving organizations a narrow window to apply emergency updates.</p>
+        <div class="article-footer">
+          <div class="article-author">By <span>&nbsp;Todd Werner</span></div>
+          <div class="read-time">4 min</div>
+        </div>
+      </div>
+
+      <div class="article-card">
+        <span class="tag tag-blockchain">Crypto</span>
+        <h3>SEC Approves First Solana Spot ETF — SOL Spikes 28% in After-Hours Trading</h3>
+        <p>The landmark approval signals a regulatory thaw, with analysts predicting $4B in inflows within the first month as institutional appetite for altcoin exposure grows.</p>
+        <div class="article-footer">
+          <div class="article-author">By <span>&nbsp;Chloe Zhang</span></div>
+          <div class="read-time">5 min</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TWO-COL: STORIES + SIDEBAR -->
+  <div class="container">
+    <div class="two-col">
+
+      <!-- RANKED STORIES -->
+      <div>
+        <div class="section-header">
+          <h2>In Depth</h2>
+          <div class="section-line"></div>
+          <a href="#" class="section-more">More Analysis →</a>
+        </div>
+        <div class="list-stories">
+
+          <div class="list-story">
+            <div class="story-number">01</div>
+            <div class="list-story-body">
+              <span class="tag tag-cyber">Analysis</span>
+              <h3>Inside the Infrastructure Behind the World's Largest Ransomware-as-a-Service Operation</h3>
+              <div class="story-meta">Elena Vasquez &nbsp;·&nbsp; 18 min read &nbsp;·&nbsp; 4h ago</div>
+            </div>
+          </div>
+
+          <div class="list-story">
+            <div class="story-number">02</div>
+            <div class="list-story-body">
+              <span class="tag tag-blockchain">Research</span>
+              <h3>The Quiet Revolution: How Zero-Knowledge Proofs Are Rebuilding Financial Privacy</h3>
+              <div class="story-meta">Dr. Yuki Tanaka &nbsp;·&nbsp; 22 min read &nbsp;·&nbsp; 6h ago</div>
+            </div>
+          </div>
+
+          <div class="list-story">
+            <div class="story-number">03</div>
+            <div class="list-story-body">
+              <span class="tag tag-zero">Deep Dive</span>
+              <h3>Mapping CISA's 2025 Known Exploited Vulnerabilities — A Year in Weaponized CVEs</h3>
+              <div class="story-meta">HCN Research Team &nbsp;·&nbsp; 30 min read &nbsp;·&nbsp; 8h ago</div>
+            </div>
+          </div>
+
+          <div class="list-story">
+            <div class="story-number">04</div>
+            <div class="list-story-body">
+              <span class="tag tag-privacy">Investigation</span>
+              <h3>The Data Broker Industry Is Quietly Selling Your Location to Police Without Warrants</h3>
+              <div class="story-meta">Investigative Desk &nbsp;·&nbsp; 16 min read &nbsp;·&nbsp; 12h ago</div>
+            </div>
+          </div>
+
+          <div class="list-story">
+            <div class="story-number">05</div>
+            <div class="list-story-body">
+              <span class="tag tag-defi">Feature</span>
+              <h3>From Mt. Gox to Bybit — A Decade of Crypto Exchange Hacks and What We Never Learned</h3>
+              <div class="story-meta">Marcus Reeve &nbsp;·&nbsp; 25 min read &nbsp;·&nbsp; 14h ago</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sidebar">
+
+        <!-- GLOBAL THREAT METER -->
+        <div class="sidebar-widget">
+          <div class="widget-title"><span class="widget-title-accent">◈</span> Global Threat Index</div>
+          <div class="threat-meter">
+            <div class="threat-level">
+              <span class="threat-label">Current Level</span>
+              <span class="threat-value">HIGH</span>
+            </div>
+            <div class="threat-bar-wrap">
+              <div class="threat-bar" style="width: 74%"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);">
+              <span>LOW</span><span>MEDIUM</span><span>HIGH</span><span>CRITICAL</span>
+            </div>
+            <div class="threat-desc">Score: 74/100 — Elevated APT activity detected across financial sector. 3 unpatched critical CVEs in active exploitation.</div>
+          </div>
+        </div>
+
+        <!-- CRYPTO PRICES -->
+        <div class="sidebar-widget">
+          <div class="widget-title"><span class="widget-title-accent">◈</span> Live Crypto Prices</div>
+          <div class="crypto-list">
+            <div class="crypto-item">
+              <div class="crypto-name">
+                <div class="crypto-icon btc-icon">₿</div>
+                <div><div class="crypto-ticker">BTC</div><div class="crypto-full">Bitcoin</div></div>
+              </div>
+              <div class="crypto-price-wrap">
+                <div class="crypto-price">$98,420</div>
+                <div class="crypto-change up">▲ +2.14%</div>
+              </div>
+            </div>
+            <div class="crypto-item">
+              <div class="crypto-name">
+                <div class="crypto-icon eth-icon">Ξ</div>
+                <div><div class="crypto-ticker">ETH</div><div class="crypto-full">Ethereum</div></div>
+              </div>
+              <div class="crypto-price-wrap">
+                <div class="crypto-price">$3,241</div>
+                <div class="crypto-change down">▼ −0.87%</div>
+              </div>
+            </div>
+            <div class="crypto-item">
+              <div class="crypto-name">
+                <div class="crypto-icon sol-icon">◎</div>
+                <div><div class="crypto-ticker">SOL</div><div class="crypto-full">Solana</div></div>
+              </div>
+              <div class="crypto-price-wrap">
+                <div class="crypto-price">$182.40</div>
+                <div class="crypto-change up">▲ +28.6%</div>
+              </div>
+            </div>
+            <div class="crypto-item">
+              <div class="crypto-name">
+                <div class="crypto-icon xrp-icon">✦</div>
+                <div><div class="crypto-ticker">XRP</div><div class="crypto-full">Ripple</div></div>
+              </div>
+              <div class="crypto-price-wrap">
+                <div class="crypto-price">$2.84</div>
+                <div class="crypto-change up">▲ +1.32%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRENDING -->
+        <div class="sidebar-widget">
+          <div class="widget-title"><span class="widget-title-accent">◈</span> Trending Now</div>
+          <div class="trending-list">
+            <div class="trending-item">
+              <div class="trending-num">1</div>
+              <div>
+                <div class="trending-title">OpenSSL Zero-Day — Everything You Need to Know</div>
+                <div class="trending-meta">12.4K reads &nbsp;·&nbsp; 23 min ago</div>
+              </div>
+            </div>
+            <div class="trending-item">
+              <div class="trending-num">2</div>
+              <div>
+                <div class="trending-title">Solana ETF Approval: Full Breakdown</div>
+                <div class="trending-meta">9.8K reads &nbsp;·&nbsp; 1h ago</div>
+              </div>
+            </div>
+            <div class="trending-item">
+              <div class="trending-num">3</div>
+              <div>
+                <div class="trending-title">North Korea Crypto Heist — $1.5B Stolen</div>
+                <div class="trending-meta">8.1K reads &nbsp;·&nbsp; 2h ago</div>
+              </div>
+            </div>
+            <div class="trending-item">
+              <div class="trending-num">4</div>
+              <div>
+                <div class="trending-title">How to Audit Your Own Smart Contracts</div>
+                <div class="trending-meta">7.2K reads &nbsp;·&nbsp; 3h ago</div>
+              </div>
+            </div>
+            <div class="trending-item">
+              <div class="trending-num">5</div>
+              <div>
+                <div class="trending-title">Ransomware Groups Adopting AI for Phishing at Scale</div>
+                <div class="trending-meta">5.9K reads &nbsp;·&nbsp; 5h ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- CVE TRACKER -->
+  <div class="container">
+    <div class="section-header">
+      <h2>CVE Tracker</h2>
+      <div class="section-line"></div>
+      <a href="#" class="section-more">Full Database →</a>
+    </div>
+    <div class="cve-grid">
+      <div class="cve-card">
+        <div class="severity-badge critical">CRITICAL</div>
+        <div class="cve-id">CVE-2025-21420</div>
+        <div class="cve-title">Windows Ancillary Function Driver Privilege Escalation</div>
+        <div class="cve-score critical">9.8</div>
+        <div class="cve-affected">Affects: Windows 10/11, Server 2019-2025</div>
+      </div>
+      <div class="cve-card">
+        <div class="severity-badge critical">CRITICAL</div>
+        <div class="cve-id">CVE-2025-19721</div>
+        <div class="cve-title">OpenSSL BN_mod_exp Buffer Overflow Remote Code Execution</div>
+        <div class="cve-score critical">9.6</div>
+        <div class="cve-affected">Affects: OpenSSL 1.x, 3.x — 500M+ installs</div>
+      </div>
+      <div class="cve-card">
+        <div class="severity-badge high">HIGH</div>
+        <div class="cve-id">CVE-2025-8821</div>
+        <div class="cve-title">Cisco IOS XE Web UI Unauthenticated RCE via HTTP</div>
+        <div class="cve-score high">8.9</div>
+        <div class="cve-affected">Affects: IOS XE 17.x Software Track</div>
+      </div>
+      <div class="cve-card">
+        <div class="severity-badge high">HIGH</div>
+        <div class="cve-id">CVE-2025-17284</div>
+        <div class="cve-title">Ivanti Connect Secure SAML Authentication Bypass</div>
+        <div class="cve-score high">8.4</div>
+        <div class="cve-affected">Affects: Connect Secure &lt;22.7R2.4</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPINION -->
+  <div class="container" style="margin-top: 48px;">
+    <div class="section-header">
+      <h2>Opinion &amp; Analysis</h2>
+      <div class="section-line"></div>
+      <a href="#" class="section-more">All Opinion →</a>
+    </div>
+    <div class="opinion-strip">
+      <div class="opinion-card">
+        <div class="opinion-label">Opinion</div>
+        <div class="opinion-quote">"We are building financial infrastructure on code that's never been war-tested. Every DeFi hack is a warning we keep ignoring."</div>
+        <div class="opinion-author">
+          <div class="author-avatar">DK</div>
+          <div>
+            <div class="author-name">Dr. Daniel Kwon</div>
+            <div class="author-role">Head of Security Research, ChainGuard Labs</div>
+          </div>
+        </div>
+      </div>
+      <div class="opinion-card">
+        <div class="opinion-label">Analysis</div>
+        <div class="opinion-quote">"The nation-state hacking problem isn't going to be solved by better firewalls. It requires geopolitical deterrence — and we're not even close."</div>
+        <div class="opinion-author">
+          <div class="author-avatar">MF</div>
+          <div>
+            <div class="author-name">Marina Forst</div>
+            <div class="author-role">Former NSA Analyst, Cyberpolicy Fellow</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWSLETTER -->
+  <div class="container">
+    <div class="newsletter">
+      <h2>Stay <em>Ahead</em> of the Threat</h2>
+      <p>Join 240,000+ security professionals and crypto investors. Daily briefings. No noise.</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="your@email.com">
+        <button>Subscribe</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="logo" href="#"><span class="hack">HACK</span><span class="chain">CHAIN</span>NEWS</a>
+        <p>Independent journalism at the intersection of cybersecurity and blockchain. Trusted by security teams, researchers, and crypto professionals worldwide.</p>
+        <div class="social-links">
+          <a class="social-link" href="#">X</a>
+          <a class="social-link" href="#">in</a>
+          <a class="social-link" href="#">tg</a>
+          <a class="social-link" href="#">gh</a>
+          <a class="social-link" href="#">rss</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Coverage</h4>
+        <a href="#">Cyber Threats</a>
+        <a href="#">Zero-Days</a>
+        <a href="#">Ransomware</a>
+        <a href="#">Nation State</a>
+        <a href="#">Malware</a>
+        <a href="#">Vulnerability</a>
+      </div>
+      <div class="footer-col">
+        <h4>Blockchain</h4>
+        <a href="#">Bitcoin</a>
+        <a href="#">Ethereum</a>
+        <a href="#">DeFi</a>
+        <a href="#">NFTs</a>
+        <a href="#">Regulation</a>
+        <a href="#">Web3</a>
+      </div>
+      <div class="footer-col">
+        <h4>HCN</h4>
+        <a href="#">About</a>
+        <a href="#">Newsroom</a>
+        <a href="#">Advertise</a>
+        <a href="#">Submit a Tip</a>
+        <a href="#">Responsible Disclosure</a>
+        <a href="#">RSS Feeds</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 HackChainNews. All rights reserved.</span>
+      <div style="display:flex;gap:24px;">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Live date
+  const d = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('live-date').textContent = `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+
+  // Hover accent line on article cards
+  document.querySelectorAll('.article-card, .hero-side, .list-story, .opinion-card').forEach(card => {
+    card.addEventListener('click', () => {
+      // placeholder for navigation
+    });
+  });
+
+  // Simple newsletter form
+  const btn = document.querySelector('.newsletter-form button');
+  const input = document.querySelector('.newsletter-form input');
+  btn.addEventListener('click', () => {
+    if (input.value.includes('@')) {
+      btn.textContent = '✓ Subscribed!';
+      btn.style.background = 'var(--accent3)';
+      input.value = '';
+      setTimeout(() => { btn.textContent = 'Subscribe'; btn.style.background = ''; }, 3000);
+    } else {
+      input.style.borderColor = 'var(--red)';
+      setTimeout(() => { input.style.borderColor = ''; }, 2000);
+    }
+  });
+
+  // Stagger article card animations
+  document.querySelectorAll('.article-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(16px)';
+    card.style.transition = `opacity .4s ease ${i * .08}s, transform .4s ease ${i * .08}s`;
+    setTimeout(() => {
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 200 + i * 80);
+  });
+</script>
+
+</body>
+</html>
